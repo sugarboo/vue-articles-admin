@@ -3,10 +3,22 @@
  */
 
 import axios from 'axios'
+import JSONbig from 'json-bigint'
 
 // 创建一个axios实例, 通过这个实例去发请求, 把需要的配置配置给这个实例来处理
 const request = axios.create({
-  baseURL: 'http://api-toutiao-web.itheima.net' // 最新接口地址
+  baseURL: 'http://api-toutiao-web.itheima.net', // 最新接口地址
+
+  // 处理后端返回的原始数据
+  transformResponse: [function (data) {
+    try {
+      // 如果转换成功, 直接返回转换结果
+      return JSONbig.parse(data)
+    } catch (error) {
+      // 当后端返回的数据不是JSON字符串时, JSONbig.parse会报错, 所以当转换失败时, 把原始数据返回给后端
+      return data
+    }
+  }]
 })
 
 // 请求拦截器

@@ -19,6 +19,11 @@ const routes = [
         path: '', // path为空, 会作为默认子路由渲染
         name: 'home',
         component: () => import('@/views/home')
+      },
+      {
+        path: 'article',
+        name: 'article',
+        component: () => import('@/views/article')
       }
     ]
   }

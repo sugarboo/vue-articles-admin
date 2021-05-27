@@ -8,7 +8,7 @@
         <el-header>
           <app-header v-on:listenToIsCollapse="isCollapseHandler"></app-header>
         </el-header>
-        <el-main class="main">
+        <el-main>
           <!-- 子路由出口 -->
           <router-view></router-view>
         </el-main>
@@ -52,7 +52,7 @@ export default {
     bottom: 0;
   }
 
-  .main {
+  .el-main {
     background-color: #e9eef3;
   }
 </style>
