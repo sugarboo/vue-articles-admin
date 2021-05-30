@@ -39,12 +39,12 @@ export default {
       formRules: { // 表单验证规则配置
         // 要验证的数据名称, 规则列表
         mobile: [
-          { require: true, message: '请输入手机号', trigger: 'change' },
-          { pattern: /^1[3|5|7|8|9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'change' }
+          { require: true, message: '请输入手机号', trigger: 'blur' },
+          { pattern: /^1[3|5|7|8|9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
         ],
         code: [
-          { require: true, message: '验证码不能为空', trigger: 'change' },
-          { pattern: /^\d{6}$/, message: '请输入正确的验证码格式', trigger: 'change' }
+          { require: true, message: '验证码不能为空', trigger: 'blur' },
+          { pattern: /^\d{6}$/, message: '请输入正确的验证码格式', trigger: 'blur' }
         ],
         agree: [
           {

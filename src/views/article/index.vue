@@ -86,6 +86,7 @@
               size="mini"
               circle
               type="primary"
+              @click="$router.push('/publish?id=' + scope.row.id.toString())"
             >
             </el-button>
             <el-button
@@ -182,8 +183,7 @@ export default {
       getArticleChannels().then((res) => {
         // 将响应结果中查询到的频道列表赋值给channels
         this.articleChannels = res.data.data.channels
-      }
-      ).catch((err) => {
+      }).catch((err) => {
         console.log(err)
       })
     },
