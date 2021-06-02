@@ -2,11 +2,11 @@
   <div class="layout_container">
     <el-container>
       <el-aside width="auto">
-        <app-aside :isCollapse="isCollapse"></app-aside>
+        <app-aside></app-aside>
       </el-aside>
       <el-container>
         <el-header>
-          <app-header v-on:listenToIsCollapse="isCollapseHandler"></app-header>
+          <app-header></app-header>
         </el-header>
         <el-main>
           <!-- 子路由出口 -->
@@ -26,19 +26,6 @@ export default {
   components: {
     AppAside,
     AppHeader
-  },
-  data () {
-    return {
-      isCollapse: false // 侧边栏的折叠状态, 默认为false, 即展开侧边栏
-    }
-  },
-  methods: {
-    /**
-     * 接收并处理子组件header传过来的isCollapse值, 并通过赋值给data的isCollapse变量将其传递给子组件aside
-     */
-    isCollapseHandler (isCollapse) {
-      this.isCollapse = isCollapse
-    }
   }
 }
 </script>
@@ -50,6 +37,7 @@ export default {
     right: 0;
     top: 0;
     bottom: 0;
+    height: 100%;
   }
 
   .el-main {

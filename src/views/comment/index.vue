@@ -46,6 +46,7 @@
 </template>
 
 <script>
+// 引入接口
 import { getComments, changeCommentStatus } from '@/api/comment'
 export default {
   name: 'CommentIndex',
@@ -59,34 +60,27 @@ export default {
   },
   methods: {
     // 加载评论列表
-    loadComments (page, pageSize) {
-      getComments(page, pageSize).then((res) => {
-        // console.log(res)
-        // 将查询到的当前页码赋值给currentPage, 实现分页组件的页码高亮改变
-        this.currentPage = page
-        // 将响应结果保存到results中
-        const { results } = res.data.data
-        results.forEach(data => {
-          data.statusDisabled = false
-        })
-        // 将results保存到articles中
-        this.articles = results
-        this.totalCount = res.data.data.total_count
-      }).catch((err) => {
-        console.log(err)
+    async loadComments (page, pageSize) {
+      const res = await getComments(page, pageSize)
+      // 将查询到的当前页码赋值给currentPage, 实现分页组件的页码高亮改变
+      this.currentPage = page
+      // 将响应结果保存到results中
+      const { results } = res.data.data
+      // 遍历得到的评论数据, 为每一条评论数据添加一个statusDisabled属性
+      results.forEach(data => {
+        data.statusDisabled = false
       })
+      // 将results保存到articles中
+      this.articles = results
+      this.totalCount = res.data.data.total_count
     },
     // switch按钮状态改变时的点击事件监听
-    onStatusChange (article) {
+    async onStatusChange (article) {
       // 开启loading
       article.statusDisabled = true
-      changeCommentStatus(article.id, article.comment_status).then((res) => {
-        // 响应成功, 关闭loading
-        article.statusDisabled = false
-        console.log(res)
-      }).catch((err) => {
-        console.log(err)
-      })
+      await changeCommentStatus(article.id, article.comment_status)
+      // 响应成功, 关闭loading
+      article.statusDisabled = false
     },
     // 每页显示数据条数改变时的事件监听
     handleSizeChange (size) {

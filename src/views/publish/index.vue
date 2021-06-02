@@ -23,6 +23,13 @@
             <el-radio :label="0">无图</el-radio>
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
+          <template v-if="article.cover.type > 0">
+            <upload-cover
+              v-for="cover in article.cover.type"
+              :key="cover"
+            >
+            </upload-cover>
+          </template>
         </el-form-item>
         <el-form-item label="频道" prop="channel_id">
           <el-select v-model="article.channel_id" placeholder="请选择频道">
@@ -48,6 +55,8 @@
 // 引入接口
 import { getArticleChannels, addArticle, getArticle, updateArticle } from '@/api/article'
 import { uploadImage } from '@/api/image'
+// 引入子组件uploadCover
+import UploadCover from './components/uploadCover'
 // 引入富文本编辑器Element-tiptap
 import {
   ElementTiptap,
@@ -74,7 +83,8 @@ import {
 export default {
   name: 'PublishIndex',
   components: {
-    'el-tiptap': ElementTiptap
+    'el-tiptap': ElementTiptap,
+    'upload-cover': UploadCover
   },
   data () {
     return {
@@ -145,39 +155,35 @@ export default {
     /**
      * 获取所有文章频道
      */
-    loadChannels () {
-      getArticleChannels().then((res) => {
-        // 将响应结果存储在articleChannels中
-        this.articleChannels = res.data.data.channels
-      }).catch((err) => {
-        console.log(err)
-      })
+    async loadChannels () {
+      const res = await getArticleChannels()
+      // 将响应结果存储在articleChannels中
+      this.articleChannels = res.data.data.channels
     },
 
     /**
      * 获取指定文章
      */
-    loadArticle () {
+    async loadArticle () {
       const articleId = this.$route.query.id
       if (articleId) {
-        getArticle(articleId).then((res) => {
-          // 请求成功响应, 将响应结果渲染到页面中
-          this.article = res.data.data
-        }).catch((err) => {
-          console.log(err)
-        })
+        const res = await getArticle(articleId)
+        // 请求成功响应, 将响应结果渲染到页面中
+        this.article = res.data.data
       }
     },
 
     /**
      * 发布文章
      */
-    onPublish (draft) {
+    async onPublish (draft) {
       // 如果是修改文章, 则执行修改操作, 否则执行添加操作
       const articleId = this.$route.query.id
       if (articleId) {
         // 请求参数中存在articleId, 执行修改操作
-        updateArticle(articleId, this.article, draft).then((res) => {
+        try {
+          const res = await updateArticle(articleId, this.article, draft)
+          console.log(res)
           this.$message({
             // 请求成功响应, 发布成功, 提示用户
             type: 'success',
@@ -185,29 +191,31 @@ export default {
           })
           // 跳转回内容管理页面
           this.$router.push('/article')
-        }).catch((err) => {
+        } catch (err) {
           console.log(err)
           this.$message({
             type: 'error',
             message: `${draft ? '存入草稿' : '编辑'}失败`
           })
-        })
+        }
       } else {
         // 请求参数中不存在articleId, 执行发布操作
-        addArticle(this.article, draft).then((res) => {
+        try {
+          const res = addArticle(this.article, draft)
+          console.log(res)
           this.$message({
             // 请求成功响应, 发布成功, 提示用户
             type: 'success',
             message: `${draft ? '存入草稿' : '发布'}成功`
           })
-        }).catch((err) => {
+        } catch (err) {
           console.log(err)
           // 请求响应失败, 发布失败, 提示用户
           this.$message({
             type: 'error',
             message: `${draft ? '存入草稿' : '发布'}失败`
           })
-        })
+        }
       }
     }
   },

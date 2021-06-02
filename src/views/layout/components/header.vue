@@ -9,8 +9,8 @@
     </div>
     <el-dropdown>
         <div class="avatar_wrap">
-          <span>{{ username }}</span>
-          <img class="avatar" :src="avatarSrc" alt="">
+          <span>{{ user.name }}</span>
+          <img class="avatar" :src="user.photo" alt="">
           <i class="el-icon-arrow-down el-icon--right"></i>
         </div>
       <el-dropdown-menu slot="dropdown">
@@ -24,26 +24,31 @@
 <script>
 // 引入user接口中的getUserProfile
 import { getUserProfile } from '@/api/user'
-
-// 引入用户头像图片
-const avatarSrc = require('../../../assets/images/avatar2.jpg')
+// 引入global-bus
+import globalBus from '@/utils/global-bus'
 
 export default {
   name: 'AppHeader',
   data () {
     return {
-      username: '', // 用户名
-      avatarSrc: avatarSrc, // 用户头像路径
+      user: {
+        name: '',
+        photo: ''
+      },
       isCollapse: false // 侧边栏折叠状态, 默认为false, 即展开侧边栏
     }
   },
   methods: {
+    async loadUserProfile () {
+      const res = await getUserProfile()
+      this.user = res.data.data
+    },
     /**
      * 点击折叠侧边栏图标时, 切换图标以及侧边栏折叠状态
      */
     onCollapse () {
-      this.isCollapse = !this.isCollapse // 取反
-      this.$emit('listenToIsCollapse', this.isCollapse) // 向父组件layout传递当前isCollapse的值
+      // 使用globalBus将点击侧边栏事件传递给aside组件
+      globalBus.$emit('changeCollapse')
     },
 
     /**
@@ -70,7 +75,7 @@ export default {
           message: '您已成功退出!'
         })
 
-        // 当用户点击取消按钮
+      // 当用户点击取消按钮
       }).catch(() => {
         // 取消退出, 提示用户
         this.$message({
@@ -82,10 +87,12 @@ export default {
   },
   mounted () {
     // 当组件渲染完成时, 发送请求, 获取username
-    getUserProfile().then((res) => {
-      this.username = res.data.data.name // 从响应中获取用户名, 保存到data的username变量中
-    }).catch((err) => {
-      console.log(err)
+    this.loadUserProfile()
+    // global-bus事件监听
+    globalBus.$on('updatedUserProfile', (name, photo) => {
+      // 用户已在个人设置页面中更新用户信息, header中数据须同步更新
+      this.user.name = name
+      this.user.photo = photo
     })
   }
 }

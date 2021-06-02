@@ -27,3 +27,30 @@ export const getUserProfile = () => {
     url: '/mp/v1_0/user/profile'
   })
 }
+
+/**
+ * 修改用户信息
+ * @param {*} name
+ * @param {*} email
+ * @param {*} photo
+ * @returns
+ */
+export const updateUserProfile = (name, email, photo) => {
+  return request({
+    method: 'PATCH',
+    url: '/mp/v1_0/user/profile',
+    data: {
+      name,
+      email,
+      photo
+    }
+  })
+}
+
+export const updateUserPhoto = (data) => {
+  return request({
+    method: 'PATCH',
+    url: '/mp/v1_0/user/photo',
+    data
+  })
+}

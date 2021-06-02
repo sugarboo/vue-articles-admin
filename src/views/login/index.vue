@@ -29,8 +29,6 @@ export default {
   data () {
     return {
       user: {
-        // mobile: '', // 手机号
-        // code: '', // 验证码
         mobile: '13911111111', // 手机号
         code: '246810', // 验证码
         agree: false // 是否同意用户协议
@@ -82,29 +80,26 @@ export default {
     /**
      * 封装用户登录请求
      */
-    login () {
+    async login () {
       // 开启登录中 loading...
       this.loginLoading = true
 
       // 获取表单数据(根据接口要求绑定数据), 调用login发起请求
-      login(this.user).then(res => {
+      try {
+        const res = await login(this.user)
         // 登录成功, 提示用户
         this.$message({
           message: '登录成功',
           type: 'success'
         })
-
         // 关闭loading
         this.loginLoading = false
-
         // 将用户信息存储到localStorage中
         window.localStorage.setItem('user', JSON.stringify(res.data.data))
-
         // 跳转到首页
         this.$router.push({ name: 'home' })
-      }).catch(err => {
+      } catch (err) {
         console.log(err)
-
         // 登录失败, 提示用户
         this.$message({
           message: '登录失败, 手机号或验证码错误',
@@ -112,7 +107,7 @@ export default {
         })
         // 关闭loading
         this.loginLoading = false
-      })
+      }
     }
   }
 }

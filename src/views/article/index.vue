@@ -26,16 +26,17 @@
             <el-option
               label="全部"
               :value="null"
-            ></el-option>
+            >
+            </el-option>
             <el-option
               v-for="(channel, index) in articleChannels"
               :key="index"
               :label="channel.name"
               :value="channel.id"
-            ></el-option>
+            >
+            </el-option>
           </el-select>
         </el-form-item>
-
         <el-form-item label="日期">
           <el-date-picker
             v-model="rangeDate"
@@ -152,40 +153,33 @@ export default {
     /**
      * 调用article接口发送请求, 加载文章列表, 默认加载第一页
      */
-    loadArticles () {
+    async loadArticles () {
       // 发送请求之前, 开启加载中
       this.loading = true
-      getArticles({
+      // 调用getArticles接口发起网络请求, 获取文章列表数据
+      const res = await getArticles({
         page: this.currentPage,
         page_size: this.pageSize,
         status: this.status,
         channel_id: this.channelId,
         begin_pubdate: this.rangeDate ? this.rangeDate[0] : null,
         end_pubdate: this.rangeDate ? this.rangeDate[1] : null
-      }).then((res) => {
-        // 将响应的文章内容数据赋值给articlesData
-        this.articlesData = res.data.data.results
-
-        // 将响应结果中查询到的文章总数赋值给totalCount
-        this.totalCount = res.data.data.total_count
-
-        // 请求成功响应, 关闭加载中
-        this.loading = false
-      }).catch((err) => {
-        console.log(err)
       })
+      // 将响应的文章内容数据赋值给articlesData
+      this.articlesData = res.data.data.results
+      // 将响应结果中查询到的文章总数赋值给totalCount
+      this.totalCount = res.data.data.total_count
+      // 请求成功响应, 关闭加载中
+      this.loading = false
     },
 
     /**
      * 调用article接口发送请求, 加载频道列表
      */
-    loadChannels () {
-      getArticleChannels().then((res) => {
-        // 将响应结果中查询到的频道列表赋值给channels
-        this.articleChannels = res.data.data.channels
-      }).catch((err) => {
-        console.log(err)
-      })
+    async loadChannels () {
+      const res = await getArticleChannels()
+      // 将响应结果中查询到的频道列表赋值给channels
+      this.articleChannels = res.data.data.channels
     },
 
     /**
@@ -204,18 +198,15 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        deleteArticle(articleId.toString()).then((res) => {
-          // 删除文章操作成功, 提示用户
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-          // 更新当前页文章列表
-          this.loadArticles(this.currentPage)
-        }).catch((err) => {
-          console.log(err)
+      }).then(async () => {
+        await deleteArticle(articleId.toString())
+        // 删除文章操作成功, 提示用户
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
         })
+        // 更新当前页文章列表
+        this.loadArticles(this.currentPage)
       }).catch(() => {
         this.$message({
           // 取消删除, 提示用户

@@ -1,12 +1,12 @@
 <template>
-  <div>
-    上传图片组件
+  <div class="fans_container">
+    fans
   </div>
 </template>
 
 <script>
 export default {
-  name: 'UploadImage'
+  name: 'FansIndex'
 }
 </script>
 

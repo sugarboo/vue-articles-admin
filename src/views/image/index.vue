@@ -50,7 +50,11 @@
       </el-pagination>
       <!-- /列表分页器 -->
       <!-- 上传素材对话框 -->
-      <el-dialog title="添加素材" :visible.sync="dialogUploadVisible" :append-to-body="true">
+      <el-dialog
+        title="添加素材"
+        :visible.sync="dialogUploadVisible"
+        :append-to-body="true"
+      >
         <el-upload class="upload_image_dialog"
           action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
           :headers="uploadHeaders"
@@ -93,21 +97,18 @@ export default {
     /**
      * 加载素材列表
      */
-    loadImages (currentPage) {
-      getImages({
-        collect: this.collect,
-        page: currentPage
-      }).then((res) => {
-        // 将响应结果中的数据保存在result中
-        this.result = res.data.data
-        this.totalCount = this.result.total_count
-        this.images = this.result.results
-        // image对象没有loading数据, 手动添加
-        this.images.forEach(image => {
-          image.loading = false
-        })
-      }).catch((err) => {
-        console.log(err)
+    async loadImages (currentPage) {
+      const res = await getImages({
+        page: currentPage,
+        collect: this.collect
+      })
+      // 将响应结果中的数据保存在result中
+      this.result = res.data.data
+      this.totalCount = this.result.total_count
+      this.images = this.result.results
+      // image对象没有loading数据, 手动添加
+      this.images.forEach(image => {
+        image.loading = false
       })
     },
     // 添加素材成功时的事件处理
@@ -123,40 +124,43 @@ export default {
       this.loadImages(page)
     },
     // 点击收藏素材按钮时的监听事件处理
-    onCollect (image) {
+    async onCollect (image) {
       // 开启loading
       image.loading = true
-      collectImage(image.id, !image.is_collected).then((res) => {
-        // 提示用户操作成功
-        this.$message({
-          type: 'success',
-          message: `${image.is_collected ? '取消收藏' : '收藏'}成功`
-        })
-        // 重新加载素材列表
-        this.loadImages(this.currentPage)
-        // 关闭loading
-        image.loading = false
+      // 调用collectImage接口, 执行收藏图片操作
+      await collectImage(image.id, !image.is_collected)
+      // 提示用户操作成功
+      this.$message({
+        type: 'success',
+        message: `${image.is_collected ? '取消收藏' : '收藏'}成功`
       })
+      // 重新加载素材列表
+      this.loadImages(this.currentPage)
+      // 关闭loading
+      image.loading = false
     },
     // 点击删除素材按钮时的监听事件处理
-    onDelete (image) {
+    async onDelete (image) {
       // 开启loading
       image.loading = true
-      deleteImage(image.id).then((res) => {
+      try {
+        // 调用deleteImage接口, 执行删除图片操作
+        await deleteImage(image.id)
         // 删除成功, 提示用户
         this.$message({
           type: 'success',
           message: '删除成功'
         })
-        // 重新加载素材列表
-        this.loadImages(this.currentPage)
-      }).catch((err) => {
+        // 刷新页面
+        this.loadImages(1)
+      } catch (err) {
         console.log(err)
+        // 删除失败, 提示用户
         this.$message({
           type: 'danger',
           message: '删除失败'
         })
-      })
+      }
     }
   },
   // 页面渲染完成后再进行网络请求, 获取响应数据

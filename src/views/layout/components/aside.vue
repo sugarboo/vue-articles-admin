@@ -2,7 +2,7 @@
   <div class="aside_container">
     <el-menu
       class="nav_menu"
-      default-active="/"
+      :default-active="$route.path"
       background-color="#37474f"
       text-color="#ffffff"
       active-text-color="#64ffda"
@@ -42,11 +42,22 @@
 </template>
 
 <script>
+// 引入global-bus
+import globalBus from '@/utils/global-bus'
 export default {
   name: 'AppAside',
-  props: [
-    'isCollapse' // 是否折叠侧边栏, 从父组件layout接收
-  ]
+  data () {
+    return {
+      isCollapse: false // 侧边栏是否折叠, 默认为false, 不折叠
+    }
+  },
+  mounted () {
+    // 使用globalBus监听header中的折叠侧边栏按钮是否被点击
+    globalBus.$on('changeCollapse', () => {
+      // 用户点击header中的折叠侧边栏按钮, 改变侧边栏折叠状态
+      this.isCollapse = !this.isCollapse
+    })
+  }
 }
 </script>
 
