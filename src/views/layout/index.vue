@@ -38,9 +38,16 @@ export default {
     top: 0;
     bottom: 0;
     height: 100%;
-  }
-
-  .el-main {
-    background-color: #e9eef3;
+    .el-container {
+      height: 100%;
+      .el-aside {
+        height: 100%;
+        width: 100%;
+        background-color:#37474f;
+      }
+      .el-main {
+        background-color: #e9eef3;
+      }
+    }
   }
 </style>

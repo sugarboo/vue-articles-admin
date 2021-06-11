@@ -5,7 +5,7 @@
       'el-icon-s-fold': isCollapse,
       'el-icon-s-unfold': !isCollapse,
     }" @click="onCollapse"></i>
-    <span>今日头条后台管理系统</span>
+    <span>文章发布管理系统</span>
     </div>
     <el-dropdown>
         <div class="avatar_wrap">
@@ -14,7 +14,7 @@
           <i class="el-icon-arrow-down el-icon--right"></i>
         </div>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item>设置</el-dropdown-item>
+        <el-dropdown-item @click.native="$router.push('/setting')">设置</el-dropdown-item>
         <el-dropdown-item @click.native="onLogOut">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -122,6 +122,9 @@ export default {
         border-radius: 50%;
         margin-right: 10px;
       }
+    }
+    .router-link, .router-link-exact-active, .router-link-active {
+      text-decoration: none;
     }
   }
 </style>

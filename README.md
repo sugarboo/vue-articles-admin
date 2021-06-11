@@ -1,4 +1,4 @@
-# vue-toutiao-admin
+# vue-articles-admin
 
 ## Project setup
 ```
